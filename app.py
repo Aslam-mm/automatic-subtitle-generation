@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, send_from_directory
 import os 
 from videoProcess import VideoProcess
 # Allowed video extensions
@@ -33,8 +33,14 @@ def generate_subtitle():
     video_file.save(filepath)
 
     process = VideoProcess(filepath) 
+    subtitled_video = os.path.splitext(filename)[0] + '_subtitled.mp4'
 
-    return render_template('index.html', message='Video uploaded and processed successfully.')
+    return render_template('index.html', message='Video uploaded and processed successfully.', video_file=subtitled_video)
+
+@app.route('/download/<filename>')
+def download_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Video</title>
+</head>
+<body>
+    <h1>Upload a Video File</h1>
+    {% if message %}
+        <p style="color: green;">{{ message }}</p>
+    {% endif %}
+    <form method="POST" action="{{ url_for('generate_subtitle') }}" enctype="multipart/form-data">
+        <input type="file" name="myfile" required>
+        <button type="submit">Upload</button>
+    </form>
+</body>
+</html>

@@ -45,6 +45,7 @@ class VideoProcess:
         try:
             with open(f'{self.base}.srt', "w", encoding="utf-8") as srt:
                 write_srt(result["segments"], file=srt)
+            self.burnSubtitles()
             self.cleanup()
             print("Subtitle file generated.")
         except Exception as e:
@@ -56,8 +57,33 @@ class VideoProcess:
             wav_file = self.base + '.wav'
             if os.path.exists(wav_file):
                 os.remove(wav_file)
-                print(f"Deleted temporary file: {wav_file}")
+                print("Deleted temporary file")
             else:
                 print(f"No WAV file to delete: {wav_file}")
         except Exception as e:
             print(f"Error during cleanup: {e}")
+
+    def burnSubtitles(self):
+        try:
+            input_video = self.filepath
+            subtitle_file = f"{self.base}.srt"
+            output_video = f"{self.base}_subtitled.mp4"
+
+            if not os.path.exists(subtitle_file):
+                print(f"No subtitle file found at {subtitle_file}")
+                return
+
+            # Convert path for ffmpeg compatibility
+            subtitle_path_ffmpeg = subtitle_file.replace(os.sep, '/').replace(':', '\\:')
+
+            command = [
+                'ffmpeg', '-y',
+                '-i', input_video,
+                '-vf', f"subtitles={subtitle_path_ffmpeg}",
+                '-c:a', 'copy',
+                output_video
+            ]
+            subprocess.run(command, check=True)
+            print(f"Subtitled video saved as {output_video}")
+        except subprocess.CalledProcessError as e:
+            print(f"Error during subtitle burning: {e}")

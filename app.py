@@ -32,8 +32,7 @@ def generate_subtitle():
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     video_file.save(filepath)
 
-    process = VideoProcess()
-    process.runFile(filepath)
+    process = VideoProcess(filepath) 
 
     return render_template('index.html', message='Video uploaded and processed successfully.')
 
